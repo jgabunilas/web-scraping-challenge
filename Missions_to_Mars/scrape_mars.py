@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import pandas as pd
 import time
-
+import datetime as dt
 
 def scrape():
         # Initialize the mars_data dictionary
@@ -19,7 +19,6 @@ def scrape():
         time.sleep(5)
         html = browser.html
         soup = bs(html, "html.parser")
-        # print(soup.prettify())
 
         ## Latest News
 
@@ -49,8 +48,7 @@ def scrape():
 
         # The latest Mars image on this page will be referenced in the first instance of the list item of class "slide"
         latest_mars_image = soup.find('li', class_='slide')
-        # print(latest_mars_image.prettify())
-        # print('-------------')
+
         # The high-res image URL is contained within the property 'data-fancybox-href', which itself is within the first anchor tag of the list element.
         image_tag = latest_mars_image.find('a')['data-fancybox-href']
 
@@ -68,34 +66,53 @@ def scrape():
         mars_facts_df = mars_facts[0]
         # Update Column Names
         mars_facts_df = mars_facts_df.rename(columns = {0:'Property', 1:'Value'})
-        mars_facts_html = mars_facts_df.to_html(index=False)
+        mars_facts_html = mars_facts_df.to_html(index=False, border=2, justify='left')
         # mars_facts_df
         # Save the mars_facts HTML code to the dictionary
         mars_data['mars_facts_html'] = mars_facts_html
 
         ## Mars Hemispheres
-        # Create a list of dictionaries containing of the Mars hemisphere titles and full resolution image URLs
-        hemisphere_image_urls = [
-        {
-                'title':'Valles Marineris Hemisphere',
-                'img_url':'https://astrogeology.usgs.gov/cache/images/b3c7c6c9138f57b4756be9b9c43e3a48_valles_marineris_enhanced.tif_full.jpg'
-        },
-        {
-                'title':'Cerberus Hemisphere',
-                'img_url':'https://astrogeology.usgs.gov/cache/images/f5e372a36edfa389625da6d0cc25d905_cerberus_enhanced.tif_full.jpg'
-        },
-        {
-                'title':'Schiaparelli Hemisphere',
-                'img_url':'https://astrogeology.usgs.gov/cache/images/3778f7b43bbbc89d6e3cfabb3613ba93_schiaparelli_enhanced.tif_full.jpg'        
-        },
-        {
-                'title':'Syrtis Major Hemisphere',
-                'img_url':'https://astrogeology.usgs.gov/cache/images/555e6403a6ddd7ba16ddb0e471cadcf7_syrtis_major_enhanced.tif_full.jpg' 
-        }
-        ]        
+        # Initiate an empty list for the title and img_url dictionaries
+        hemisphere_image_urls = []
+        
+        # Create a list of each of the enhanced hemisphere pages that will need to be scraped
+        urls = [
+        'https://astrogeology.usgs.gov/search/map/Mars/Viking/valles_marineris_enhanced',
+        'https://astrogeology.usgs.gov/search/map/Mars/Viking/cerberus_enhanced',
+        'https://astrogeology.usgs.gov/search/map/Mars/Viking/schiaparelli_enhanced',
+        'https://astrogeology.usgs.gov/search/map/Mars/Viking/syrtis_major_enhanced'
+        ]
+
+        # Scrape the image URLs using a for loop to iterate though each respective page and dig up the image URL for the hemisphere and the title of the hemisphere
+        for url in urls:
+                executable_path = {'executable_path': 'chromedriver.exe'}
+                browser = Browser('chrome', **executable_path, headless=False)
+                browser.visit(url)
+
+                time.sleep(5)
+                html = browser.html
+                soup = bs(html, "html.parser")
+
+
+                title = soup.find('h2', class_='title').text
+                img_url = 'https://astrogeology.usgs.gov'+soup.find('img', class_='wide-image')['src']
+                # print(title)
+                # print(img_url)
+
+                # Append the scraped title and image url to the hemisphere_image_urls dictionary
+                hemisphere_image_urls.append(
+                        {
+                        'title': title,
+                        'img_url': img_url
+                        }
+                )
+        
 
         # Add hemisphere image dictionary to the mars_data dictionary
         mars_data['hemisphere_image_urls'] = hemisphere_image_urls
+        
+        # Add the time of the scrape to the dictionary
+        mars_data['last_scrape'] = dt.datetime.now()
 
         return mars_data
 
