@@ -46,15 +46,16 @@ def scrape():
         html = browser.html
         soup = bs(html, "html.parser")
 
-        # The latest Mars image on this page will be referenced in the first instance of the list item of class "slide"
-        latest_mars_image = soup.find('li', class_='slide')
+        # The featured image URL lies within an article tag under a style attribute. However, this soup find will return a partial URL that has unneeded information. This extraneous information will need to be sliced out of the string. Regardless of how long the URL is, we can get at the part that we care about by slicing from the 23rd character to the third-to-last character.
+        # Note that the featured image is sometimes unrelated to Mars, in spite of being featured on the Mars space images page.
+        featured_image = soup.find('article')['style']
+        # featured_image[23:-3]
 
-        # The high-res image URL is contained within the property 'data-fancybox-href', which itself is within the first anchor tag of the list element.
-        image_tag = latest_mars_image.find('a')['data-fancybox-href']
+        # The featured image URL can be completed by adding the featured_image slice to the base URL.
+        featured_image_url = f'https://www.jpl.nasa.gov' + featured_image[23:-3]
+        # featured_image_url
 
-        # Complete the image URL by adding the base URL to the image_tag
-        featured_image_url = f'https://www.jpl.nasa.gov' + image_tag
-        # print(featured_image_url)
+
         # Save the image URL into the mars_data dictionary
         mars_data['featured_image_url'] = featured_image_url
 

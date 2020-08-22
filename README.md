@@ -19,7 +19,7 @@ The most recent news headline and teaser statement from the [NASA Mars News Webs
 
 ## Featured Mars Photo
 
-The most recently featured Mars photograph from the [JPL Space Images](https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars) website was scraped using BeautifulSoup
+The most recently featured photograph on the Mars section of the [JPL Space Images](https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars) website was scraped using BeautifulSoup. Note that the featured image is not always related to Mars in spite of being shown on the Mars Images page. An example has been provided in the images screenshots folder, in which the featured image is of Galacy NGC 1068.
 
 ## Mars Facts
 
