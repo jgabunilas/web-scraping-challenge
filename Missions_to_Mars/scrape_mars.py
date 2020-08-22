@@ -11,7 +11,7 @@ def scrape():
         url = 'https://mars.nasa.gov/news/'
 
 
-        # Chromedriver executable path
+        # Chromedriver executable path. Note that the chromedriver executable was placed in the local directory
         executable_path = {'executable_path': 'chromedriver.exe'}
         browser = Browser('chrome', **executable_path, headless=False)
         browser.visit(url)
@@ -37,8 +37,8 @@ def scrape():
 
         # Load in the JPL Mars images website and open with splinter
         url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
-        executable_path = {'executable_path': 'chromedriver.exe'}
-        browser = Browser('chrome', **executable_path, headless=False)
+        # executable_path = {'executable_path': 'chromedriver.exe'}
+        # browser = Browser('chrome', **executable_path, headless=False)
         browser.visit(url)
 
         # Soupify the browser
@@ -86,8 +86,8 @@ def scrape():
 
         # Scrape the image URLs using a for loop to iterate though each respective page and dig up the image URL for the hemisphere and the title of the hemisphere
         for url in urls:
-                executable_path = {'executable_path': 'chromedriver.exe'}
-                browser = Browser('chrome', **executable_path, headless=False)
+                # executable_path = {'executable_path': 'chromedriver.exe'}
+                # browser = Browser('chrome', **executable_path, headless=False)
                 browser.visit(url)
 
                 time.sleep(5)
